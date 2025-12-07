@@ -1,83 +1,61 @@
-// ============================
-// Isi otomatis tanggal hari ini
-// ============================
-window.onload = function () {
-    const now = new Date();
+<input type="date" id="tanggal" />
+<div id="hasil" style="margin-top:10px;"></div>
 
-    document.getElementById("tgl").value = now.getDate();
-    document.getElementById("bln").value = now.getMonth() + 1;
-    document.getElementById("thn").value = now.getFullYear();
+<script>
+// --- 1. Set tanggal otomatis hari ini ---
+document.getElementById("tanggal").value =
+    new Date().toISOString().substring(0, 10);
 
-    // auto fokus ke input terakhir (tahun)
-    document.getElementById("thn").focus();
-};
-
-// ============================
-// Eksekusi saat tekan ENTER
-// ============================
-document.addEventListener("keydown", function (e) {
+// --- 2. Tekan ENTER untuk eksekusi ---
+document.getElementById("tanggal").addEventListener("keydown", function(e) {
     if (e.key === "Enter") {
-        hitungWeton();
+        prosesTanggal();
     }
 });
 
-// ============================
-// Fungsi perhitungan weton
-// ============================
-function hitungWeton() {
-    const tgl = parseInt(document.getElementById('tgl').value);
-    const bln = parseInt(document.getElementById('bln').value);
-    const thn = parseInt(document.getElementById('thn').value);
+// --- Data Neptu Jawa ---
+const dinoJawa = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+const neptuDino = { "Minggu": 5, "Senin": 4, "Selasa": 3, "Rabu": 7, "Kamis": 8, "Jumat": 6, "Sabtu": 9 };
 
-    if (isNaN(tgl) || isNaN(bln) || isNaN(thn)) {
-        document.getElementById('hasil').innerText = "Input salah, gunakan angka.";
-        return;
-    }
+const pasaran = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
+const neptuPasaran = { "Legi": 5, "Pahing": 9, "Pon": 7, "Wage": 4, "Kliwon": 8 };
 
-    const hariJawa = ["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"];
-    const neptuHari = [4,3,7,8,6,9,5];
-    const pasaran = ["Legi","Pahing","Pon","Wage","Kliwon"];
-    const neptuPasaran = [5,9,7,4,8];
-    const wukuList = [
-        "Shinta","Landhep","Wukir","Kurantil","Tolu","Gumbreg","Warigalit","Warigagung",
-        "Julungwangi","Sungsang","Galungan","Kuningan","Langkir","Mandasia","Julungpujut",
-        "Pahang","Kuruwelut","Mrakeh","Tambir","Madangkungan","Maktal","Wuye","Manahil",
-        "Prangbakat","Bala","Wugu","Wayang","Kulawu","Dhukut","Watugunung"
-    ];
-    const bulanJawa = [
-        "Sura","Sapar","Mulud","Bakda Mulud","Jumadilawal","Jumadilakir",
-        "Rejeb","Ruwah","Pasa","Sawal","Sela","Besar"
-    ];
-
-    // Referensi 3 Des 2025
-    const refTanggal = new Date(2025, 11, 3);
-    const refHariIndex = 2;
-    const refPasaranIndex = 3;
-    const refWukuIndex = 12;
-    const refTanggalJawa = 12;
-    const refBulanJawaIndex = 5;
-    const refTahunJawa = 1959;
-
-    const selisihHari = Math.floor((new Date(thn, bln - 1, tgl) - refTanggal) / 86400000);
-
-    let hariIndex = (refHariIndex + selisihHari) % 7;
-    if (hariIndex < 0) hariIndex += 7;
-
-    let pasaranIndex = (refPasaranIndex + selisihHari) % 5;
-    if (pasaranIndex < 0) pasaranIndex += 5;
-
-    const neptu = neptuHari[hariIndex] + neptuPasaran[pasaranIndex];
-
-    let wukuIndex = (refWukuIndex + Math.floor(selisihHari / 7)) % 30;
-    if (wukuIndex < 0) wukuIndex += 30;
-
-    let totalHari = refTanggalJawa + selisihHari;
-    let tanggalJawa = ((totalHari - 1) % 30) + 1;
-    let bulanJawaIndex = (refBulanJawaIndex + Math.floor((totalHari - 1) / 30)) % 12;
-    let tahunJawa = refTahunJawa + Math.floor((totalHari - 1) / 360);
-
-    document.getElementById('hasil').innerText =
-        `${input}, Hari Jawa: ${hariJawa[hariIndex]}, Pasaran: ${pasaran[pasaranIndex]}, Neptu: ${neptu}, ` +
-        `Wuku: ${wukuList[wukuIndex]}, Tanggal Jawa: ${tanggalJawa} ${bulanJawa[bulanJawaIndex]} ${tahunJawa}`;
+// --- Fungsi Hitung Pasaran Jawa ---
+function hitungPasaran(dateObj) {
+    // basis: 1 Januari 1970 adalah Kamis Legi
+    const start = new Date("1970-01-01");
+    const diff = Math.floor((dateObj - start) / (1000 * 60 * 60 * 24));
+    return pasaran[ diff % 5 ];
 }
 
+// --- 3. Proses Tanggal ---
+function prosesTanggal() {
+    const input = document.getElementById("tanggal").value;
+    const dateObj = new Date(input);
+
+    // Hari biasa
+    const hari = dinoJawa[ dateObj.getDay() ];
+
+    // Pasaran
+    const pasar = hitungPasaran(dateObj);
+
+    // Neptu
+    const totalNeptu = neptuDino[hari] + neptuPasaran[pasar];
+
+    // Format Indonesia
+    const tampilIndo = dateObj.toLocaleDateString("id-ID", {
+        weekday: "long", year: "numeric", month: "long", day: "numeric"
+    });
+
+    document.getElementById("hasil").innerHTML = `
+        <b>Tanggal input:</b> ${input}<br>
+        <b>Format Indonesia:</b> ${tampilIndo}<br><br>
+
+        <b>Hari Jawa:</b> ${hari}<br>
+        <b>Pasaran:</b> ${pasar}<br>
+        <b>Neptu Hari:</b> ${neptuDino[hari]}<br>
+        <b>Neptu Pasaran:</b> ${neptuPasaran[pasar]}<br>
+        <b>Total Neptu:</b> ${totalNeptu}
+    `;
+}
+</script>
