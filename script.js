@@ -68,7 +68,7 @@ function hitungWeton() {
 
     const neptu = neptuHari[hariIndex] + neptuPasaran[pasaranIndex];
 
-    let wukuIndex = (refWukuIndex + Math.floor(selisihHari / 7)) % 30+3;
+    let wukuIndex = (refWukuIndex + Math.floor(selisihHari / 7)) % 30 -3;
     if (wukuIndex < 0) wukuIndex += 30;
 
     let totalHari = refTanggalJawa + selisihHari;
@@ -80,5 +80,6 @@ function hitungWeton() {
         `Hari: ${hariJawa[hariIndex]}, pasaran: ${pasaran[pasaranIndex]}, neptu: ${neptu}, ` +
         `wuku: ${wukuList[wukuIndex]}, dan tanggal Jawa: ${tanggalJawa} ${bulanJawa[bulanJawaIndex]} ${tahunJawa}`;
 }
+
 
 
