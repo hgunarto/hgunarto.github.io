@@ -50,11 +50,11 @@ function hitungWeton() {
     ];
 
     // Referensi 3 Des 2025
-    const refTanggal = new Date(2025, 11, 3);
-    const refHariIndex = 2;
-    const refPasaranIndex = 3;
+    const refTanggal = new Date(2025, 10, 30); //2025,11,3tadinya
+    const refHariIndex = 6; //2tadinya
+    const refPasaranIndex = 0; //3tadinya
     const refWukuIndex = 12;
-    const refTanggalJawa = 12;
+    const refTanggalJawa = 9; //12tadinya
     const refBulanJawaIndex = 5;
     const refTahunJawa = 1959;
 
@@ -68,7 +68,7 @@ function hitungWeton() {
 
     const neptu = neptuHari[hariIndex] + neptuPasaran[pasaranIndex];
 
-    let wukuIndex = (refWukuIndex + Math.floor(selisihHari / 7)) % 30 -3;
+    let wukuIndex = (refWukuIndex + Math.floor(selisihHari / 7)) % 30;
     if (wukuIndex < 0) wukuIndex += 30;
 
     let totalHari = refTanggalJawa + selisihHari;
@@ -80,6 +80,7 @@ function hitungWeton() {
         `Hari: ${hariJawa[hariIndex]}, pasaran: ${pasaran[pasaranIndex]}, neptu: ${neptu}, ` +
         `wuku: ${wukuList[wukuIndex]}, dan tanggal Jawa: ${tanggalJawa} ${bulanJawa[bulanJawaIndex]} ${tahunJawa}`;
 }
+
 
 
 
