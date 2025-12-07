@@ -49,8 +49,8 @@ function hitungWeton() {
         "Rejeb","Ruwah","Pasa","Sawal","Sela","Besar"
     ];
 
-    // Referensi 3 Des 2025
-    const refTanggal = new Date(2025, 10, 30); //2025,11,3tadinya
+    // Referensi 30 Nov 2025 adalah Minggu Legi tgl 9 Juwadilakir 1959
+    const refTanggal = new Date(2025, 10, 30); //2025,11,3tadinya atau 3 des 2025
     const refHariIndex = 6; //2tadinya
     const refPasaranIndex = 0; //3tadinya
     const refWukuIndex = 12;
@@ -80,6 +80,7 @@ function hitungWeton() {
         `Hari: ${hariJawa[hariIndex]}, pasaran: ${pasaran[pasaranIndex]}, neptu: ${neptu}, ` +
         `wuku: ${wukuList[wukuIndex]}, dan tanggal Jawa: ${tanggalJawa} ${bulanJawa[bulanJawaIndex]} ${tahunJawa}`;
 }
+
 
 
 
