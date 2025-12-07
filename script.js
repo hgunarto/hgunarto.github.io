@@ -1,3 +1,29 @@
+// ============================
+// Isi otomatis tanggal hari ini
+// ============================
+window.onload = function () {
+    const now = new Date();
+
+    document.getElementById("tgl").value = now.getDate();
+    document.getElementById("bln").value = now.getMonth() + 1;
+    document.getElementById("thn").value = now.getFullYear();
+
+    // auto fokus ke input terakhir (tahun)
+    document.getElementById("thn").focus();
+};
+
+// ============================
+// Eksekusi saat tekan ENTER
+// ============================
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+        hitungWeton();
+    }
+});
+
+// ============================
+// Fungsi perhitungan weton
+// ============================
 function hitungWeton() {
     const tgl = parseInt(document.getElementById('tgl').value);
     const bln = parseInt(document.getElementById('bln').value);
