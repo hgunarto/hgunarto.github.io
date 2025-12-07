@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Hitung Weton + Wuku + Tanggal Jawa Akurat</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 30px; }
+input { width: 50px; margin: 5px; }
+button { margin-top: 10px; }
+#hasil { margin-top: 20px; font-weight: bold; }
+</style>
+
+<!-- Memanggil file JavaScript eksternal -->
+<script src="script.js"></script>
+</head>
+
+<body>
+<h2>Menghitung Hari Jawa, Pasaran, Neptu, Wuku (sejak tahun 1926)</h2>
+<h2>... dan tanggal Jawa (akurat sejak 1 Desember 2025)</h2>
+
+<label>Masukkan Tanggal:</label><br>
+<input type="number" id="tgl" placeholder="DD" min="1" max="31">
+<input type="number" id="bln" placeholder="MM" min="1" max="12">
+<input type="number" id="thn" placeholder="YYYY" min="1900" max="2100">
+<br>
+<button onclick="hitungWeton()">Hitung</button>
+
+<div id="hasil"></div>
+
+</body>
+</html>
