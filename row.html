@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Row Row Row Your Boat – Per Bait</title>
+</head>
+<body>
+
+<button id="play">Putar Lagu</button>
+
+<script>
+let audioCtx;
+
+document.getElementById("play").onclick = () => {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function beep(freq, t, dur=0.45) {
+        let o = audioCtx.createOscillator();
+        let g = audioCtx.createGain();
+
+        o.frequency.value = freq;
+        o.connect(g).connect(audioCtx.destination);
+
+        g.gain.setValueAtTime(0.4, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        o.start(t);
+        o.stop(t + dur);
+    }
+
+    // Nada C mayor
+    const C = 523;
+    const D = 587;
+    const E = 659;
+    const G = 784;
+    const A = 880;
+
+    const beat = 0.55;
+
+    // BAGI PER BAIT
+    const bait1 = [C, C, C, D, E, E, D, E, C];  // Row row row your boat
+    const bait2 = [E, G, G];                    // Gently down the stream
+    const bait3 = [E, G, G];                    // Merrily merrily merrily merrily
+    const bait4 = [G, A, G, E, C];              // Life is but a dream
+
+    const baitSemua = [bait1, bait2, bait3, bait4];
+
+    let t = audioCtx.currentTime + 0.1;
+
+    for (let ulang = 0; ulang < 3; ulang++) {
+        for (let bait of baitSemua) {
+
+            // mainkan nada dalam bait
+            for (let f of bait) {
+                beep(f, t);
+                t += beat;
+            }
+
+            // jeda 3 detik setelah setiap bait
+            t += 3;
+        }
+    }
+};
+</script>
+
+</body>
+</html>
