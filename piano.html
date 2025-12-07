@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Piano 3 Oktav (Keyboard + Klik)</title>
+<style>
+  body { font-family: sans-serif; text-align: center; }
+  #piano { display: flex; justify-content: center; margin-top: 30px; }
+  .key {
+      width: 40px; height: 180px; border: 1px solid #000;
+      margin: 1px; background: white; position: relative;
+      display: flex; align-items: flex-end; justify-content: center;
+      font-size: 11px; cursor: pointer;
+      user-select: none;
+  }
+  .key.black {
+      width: 28px; height: 120px; background: black; color: white;
+      position: absolute; margin-left: -14px; z-index: 20;
+  }
+  .active { background: yellow !important; color: black !important; }
+  .wrapper { position: relative; }
+</style>
+</head>
+
+<body>
+<h2>Piano 3 Oktav – Keyboard + Klik</h2>
+<p>
+Gunakan keyboard QWERTY atau klik langsung tuts piano.
+</p>
+
+<div id="piano"></div>
+
+<script>
+/* ===============================
+   MEMBUAT LIST NADA C3–B5
+================================== */
+const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+let allKeys = [];
+for (let o = 3; o <= 5; o++) {
+    for (let n of NOTES) allKeys.push(n + o);
+}
+
+/* ===============================
+   PEMETAAN KEYBOARD → NADA
+================================== */
+const keyboardMap = {
+  // oktaf 3
+  'q':'C3','2':'C#3','w':'D3','3':'D#3','e':'E3','r':'F3','5':'F#3','t':'G3','6':'G#3','y':'A3','7':'A#3','u':'B3',
+  // oktaf 4
+  'a':'C4','z':'C#4','s':'D4','x':'D#4','d':'E4','f':'F4','v':'F#4','g':'G4','b':'G#4','h':'A4','n':'A#4','j':'B4',
+  // oktaf 5
+  'k':'C5','m':'C#5','l':'D5',',':'D#5',';':'E5',"'":'F5','.':'F#5','/':'G5','[':'G#5',']':'A5','=':'A#5','p':'B5'
+};
+
+/* ===============================
+   GENERATE UI TUTS PIANO
+================================== */
+let piano = document.getElementById("piano");
+
+allKeys.forEach(note => {
+    let wrap = document.createElement("div");
+    wrap.className = "wrapper";
+
+    let key = document.createElement("div");
+    key.className = "key";
+    key.id = note;
+    key.textContent = note;
+
+    if (note.includes("#")) {
+        key.classList.add("black");
+        key.style.left = "-15px";
+    }
+
+    /* klik mouse */
+    key.addEventListener("mousedown", () => {
+        playNote(note);
+        key.classList.add("active");
+    });
+    key.addEventListener("mouseup", () => {
+        key.classList.remove("active");
+    });
+    key.addEventListener("mouseleave", () => {
+        key.classList.remove("active");
+    });
+
+    wrap.appendChild(key);
+    piano.appendChild(wrap);
+});
+
+/* ===============================
+   SISTEM AUDIO (WebAudio)
+================================== */
+const audio = new (window.AudioContext || window.webkitAudioContext)();
+
+function playNote(note) {
+    let freq = getFrequency(note);
+    const osc = audio.createOscillator();
+    const gain = audio.createGain();
+
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.25, audio.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 1.2);
+
+    osc.connect(gain).connect(audio.destination);
+    osc.start();
+    osc.stop(audio.currentTime + 1.3);
+}
+
+function getFrequency(note) {
+    const A4 = 440;
+    const INDEX = {"C": -9,"C#": -8,"D": -7,"D#": -6,"E": -5,"F": -4,"F#": -3,"G": -2,"G#": -1,"A": 0,"A#": 1,"B": 2};
+    let pitch = note.slice(0, note.length-1);
+    let octave = parseInt(note[note.length-1]);
+    let semitone = INDEX[pitch] + (octave - 4) * 12;
+    return A4 * Math.pow(2, semitone / 12);
+}
+
+/* ===============================
+   INPUT KEYBOARD
+================================== */
+document.addEventListener("keydown", e => {
+    if (keyboardMap[e.key]) {
+        let note = keyboardMap[e.key];
+        playNote(note);
+
+        let key = document.getElementById(note);
+        if (key) key.classList.add("active");
+    }
+});
+document.addEventListener("keyup", e => {
+    if (keyboardMap[e.key]) {
+        let key = document.getElementById(keyboardMap[e.key]);
+        if (key) key.classList.remove("active");
+    }
+});
+</script>
+</body>
+</html>
