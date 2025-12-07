@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Piano Gamelan (Slentem – Saron – Demung)</title>
+<style>
+  body { font-family: sans-serif; text-align: center; }
+  #piano { display: flex; justify-content: center; margin-top: 30px; }
+  .key {
+      width: 45px; height: 180px; border: 1px solid #000; margin: 1px;
+      background: white; display: flex; align-items: flex-end; justify-content: center;
+      position: relative; cursor: pointer; user-select: none;
+  }
+  .active { background: gold !important; }
+  .black { width: 30px; height: 120px; background: black; color: white;
+           position: absolute; margin-left: -15px; z-index: 20; }
+  .wrapper { position: relative; }
+  #instSel { margin-top: 20px; font-size: 18px; }
+</style>
+</head>
+
+<body>
+<h2>Gamelan Slentem • Saron • Demung</h2>
+
+<select id="instSel">
+  <option value="slentem">Slentem (halus & panjang)</option>
+  <option value="saron">Saron (keras & pendek)</option>
+  <option value="demung">Demung (nada rendah)</option>
+</select>
+
+<div id="piano"></div>
+
+<script>
+/* =====================================
+   MEMBUAT NADA C3–C5 (2 oktav cocok gamelan)
+===================================== */
+const NOTES = ["C","D","E","F","G","A","B"];
+let allKeys = [];
+for (let o = 3; o <= 4; o++) {
+    for (let n of NOTES) allKeys.push(n + o);
+}
+
+/* =====================================
+   GAMELAN OVERTONES (metallic partials)
+===================================== */
+function makeGamelanTone(freq, type) {
+    let overtones;
+    let decay;
+
+    if (type === "slentem") {
+        overtones = [1.0, 2.4, 3.8, 5.2, 6.7];
+        decay = 2.5;
+    }
+    else if (type === "saron") {
+        overtones = [1.0, 2.4, 3.8];
+        decay = 0.8;
+    }
+    else if (type === "demung") {
+        overtones = [1.0, 2.2, 3.5];
+        decay = 1.5;
+    }
+
+    const oscNodes = [];
+    const gain = audio.createGain();
+    gain.connect(audio.destination);
+
+    overtones.forEach((mult, i) => {
+        let osc = audio.createOscillator();
+        let g = audio.createGain();
+        let f = freq * mult;
+
+        osc.frequency.value = f;
+        osc.type = "sine";
+
+        g.gain.setValueAtTime(0.28 / (i+1), audio.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + decay);
+
+        osc.connect(g).connect(gain);
+        osc.start();
+        osc.stop(audio.currentTime + decay + 0.2);
+
+        oscNodes.push(osc);
+    });
+}
+
+/* =====================================
+   FREKUENSI
+===================================== */
+function getFrequency(note) {
+    const A4 = 440;
+    const INDEX = {"C":-9,"D":-7,"E":-5,"F":-4,"G":-2,"A":0,"B":2};
+    let pitch = note[0];
+    let octave = parseInt(note[1]);
+    let semitone = INDEX[pitch] + (octave - 4) * 12;
+    return A4 * Math.pow(2, semitone / 12);
+}
+
+/* =====================================
+   GENERATE UI
+===================================== */
+let piano = document.getElementById("piano");
+allKeys.forEach(note => {
+    let wrap = document.createElement("div");
+    wrap.className = "wrapper";
+
+    let key = document.createElement("div");
+    key.className = "key";
+    key.id = note;
+    key.textContent = note;
+
+    /* Klik mouse */
+    key.addEventListener("mousedown", () => {
+        playNote(note);
+        key.classList.add("active");
+    });
+    key.addEventListener("mouseup", () => key.classList.remove("active"));
+    key.addEventListener("mouseleave", () => key.classList.remove("active"));
+
+    wrap.appendChild(key);
+    piano.appendChild(wrap);
+});
+
+/* =====================================
+   AUDIO
+===================================== */
+const audio = new (window.AudioContext || window.webkitAudioContext)();
+
+function playNote(note) {
+    let freq = getFrequency(note);
+    let inst = document.getElementById("instSel").value;
+    makeGamelanTone(freq, inst);
+}
+
+/* =====================================
+   KEYBOARD INPUT
+===================================== */
+const keyMap = {
+    'a':'C3','s':'D3','d':'E3','f':'F3','g':'G3','h':'A3','j':'B3',
+    'q':'C4','w':'D4','e':'E4','r':'F4','t':'G4','y':'A4','u':'B4'
+};
+
+document.addEventListener("keydown", e => {
+    if (keyMap[e.key]) {
+        let note = keyMap[e.key];
+        playNote(note);
+
+        let key = document.getElementById(note);
+        if (key) key.classList.add("active");
+    }
+});
+document.addEventListener("keyup", e => {
+    if (keyMap[e.key]) {
+        let key = document.getElementById(keyMap[e.key]);
+        if (key) key.classList.remove("active");
+    }
+});
+</script>
+
+</body>
+</html>
