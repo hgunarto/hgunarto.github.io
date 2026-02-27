@@ -77,9 +77,10 @@ function hitungWeton() {
     let tahunJawa = refTahunJawa + Math.floor((totalHari - 1) / 360);
 
     document.getElementById('hasil').innerText =
-        `Hari: ${hariJawa[hariIndex]}, pasaran: ${pasaran[pasaranIndex]}, neptu: ${neptu}, ` +
-        `wuku: ${wukuList[wukuIndex]}, dan tanggal Jawa: ${tanggalJawa} ${bulanJawa[bulanJawaIndex]} ${tahunJawa}`;
+        `adalah hari: ${hariJawa[hariIndex]} - ${pasaran[pasaranIndex]}, dengan neptu: ${neptu}, ` +
+        `wuku: ${wukuList[wukuIndex]}, dan tanggal Jawa nya: ${tanggalJawa} ${bulanJawa[bulanJawaIndex]} ${tahunJawa}`;
 }
+
 
 
 
